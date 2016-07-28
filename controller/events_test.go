@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/flynn/flynn/controller/client"
 	ct "github.com/flynn/flynn/controller/types"
 	"github.com/flynn/flynn/pkg/random"
 	. "github.com/flynn/go-check"
@@ -476,4 +477,44 @@ func (s *S) TestGetEvent(c *C) {
 	event, err := s.c.GetEvent(events[0].ID)
 	c.Assert(err, IsNil)
 	c.Assert(event, DeepEquals, events[0])
+}
+
+func (s *S) TestGetEvents(c *C) {
+	// TODO(jvatic): Create event of type EventTypeAppDeletion
+	// TODO(jvatic): Create event of type EventTypeAppRelease
+	// TODO(jvatic): Create event of type EventTypeDeployment
+	// TODO(jvatic): Create event of type EventTypeJob
+	// TODO(jvatic): Create event of type EventTypeScale
+	// TODO(jvatic): Create event of type EventTypeRelease
+	// TODO(jvatic): Create event of type EventTypeReleaseDeletion
+	// TODO(jvatic): Create event of type EventTypeArtifact
+	// TODO(jvatic): Create event of type EventTypeProvider
+	// TODO(jvatic): Create event of type EventTypeResource
+	// TODO(jvatic): Create event of type EventTypeResourceDeletion
+	// TODO(jvatic): Create event of type EventTypeResourceAppDeletion
+	// TODO(jvatic): Create event of type EventTypeRoute
+	// TODO(jvatic): Create event of type EventTypeRouteDeletion
+	// TODO(jvatic): Create event of type EventTypeDomainMigration
+	// TODO(jvatic): Create event of type EventTypeClusterBackup
+	// TODO(jvatic): Create event of type EventTypeAppGarbageCollection
+
+	//c.Assert(createEvent(s.db.Exec, &ct.Event{
+	//	AppID:      app.ID,
+	//	ObjectID:   app.ID,
+	//	ObjectType: ct.EventTypeApp,
+	//}, app), IsNil)
+
+	app := s.createTestApp(c, &ct.App{})
+	s.withEachClient(func(client controller.Client) {
+		events, err := s.c.ListEvents(ct.ListEventsOptions{
+			ObjectTypes: []ct.EventType{ct.EventTypeApp},
+			AppID:       app.ID,
+		})
+		c.Assert(err, IsNil)
+		c.Assert(len(events), Equals, 1)
+
+		event, err := s.c.GetEvent(events[0].ID)
+		c.Assert(err, IsNil)
+		c.Assert(event, DeepEquals, events[0])
+	})
 }
